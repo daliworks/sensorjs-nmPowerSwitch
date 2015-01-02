@@ -1,0 +1,37 @@
+{
+  "name": "sensorjs-nmPowerSwitch",
+  "description": "nmPowerSwitch sensor networks and drivers for sensorjs",
+  "version": "0.0.1-2",
+  "author": {
+    "name": "daliworks",
+    "email": "dev@daliworks.net"
+  },
+  "dependencies": {
+    "async": "0.9",
+    "lodash": "2.4",
+    "log4js": "0.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:daliworks/sensorjs-nmPowerSwitch"
+  },
+  "bugs": {
+    "url": "https://github.com/daliworks/sensorjs-nmPowerSwitch/issues"
+  },
+  "main": "index",
+  "keywords": [
+    "sensor",
+    "sensor.js",
+    "nmPowerSwitch",
+    "driver"
+  ],
+  "engines": {
+    "node": ">=0.8.x"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/daliworks/sensorjs-nmPowerSwitch/blob/msater/LICENSE"
+    }
+  ]
+}
