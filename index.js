@@ -25,8 +25,8 @@ function initDrivers() {
 }
 
 var drivers = {};
-//drivers[SENSOR_DRIVER_NAME] = ['normallyOpen'];
-drivers[ACTUATOR_DRIVER_NAME] = ['powerSwitch'];
+//drivers[SENSOR_DRIVER_NAME] = ['nmPowerSwitchSensor'];
+drivers[ACTUATOR_DRIVER_NAME] = ['nmPowerSwitchActuator'];
 
 module.exports = {
   drivers: drivers,
