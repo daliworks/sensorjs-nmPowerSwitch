@@ -6,7 +6,8 @@ var util = require('util'),
     Actuator = SensorLib.Actuator,
     logger = Actuator.getLogger();
 
-var DEFAULT_BLINK_INTERVAL = 5000;
+var DEFAULT_BLINK_INTERVAL = 5000,
+PORT_SEP = /[:.,\/\-_|]/;
 
 var _portValue = {};
 
@@ -15,7 +16,7 @@ var nmPowerSwitchActuator = function (sensorInfo, options) {
   Actuator.call(this, sensorInfo, options);
 
   if (!_.isUndefined(sensorInfo.device.address) && sensorInfo.device.sensorNetwork) {
-    var addrNport = sensorInfo.device.address.split('.');
+    var addrNport = sensorInfo.device.address.split(PORT_SEP);
     // address format ex) 0.1 :  uart port 0 and port 1
     this.deviceName = '/dev/tty' + sensorInfo.device.sensorNetwork.toUpperCase() + 
       (Number(addrNport[0]) || 0);
