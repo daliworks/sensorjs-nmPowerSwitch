@@ -2,42 +2,39 @@
 var util = require('util'),
     fs = require('fs'),
     _ = require('lodash'),
-    SensorLib = require('../../index'),
+    SensorLib = require('../index'),
     Actuator = SensorLib.Actuator,
     logger = Actuator.getLogger();
 
-var DEFAULT_BLINK_INTERVAL = 5000,
-PORT_SEP = /[:.,\/\-_|]/;
+var DEFAULT_BLINK_INTERVAL = 5000;
 
-var _portValue = {};
+var _channelValue = {};
 
 // nmPowerSwitchActuator constructor
 var nmPowerSwitchActuator = function (sensorInfo, options) {
   Actuator.call(this, sensorInfo, options);
 
-  if (!_.isUndefined(sensorInfo.device.address) && sensorInfo.device.sensorNetwork) {
-    var addrNport = sensorInfo.device.address.split(PORT_SEP);
-    // address format ex) 0.1 :  uart port 0 and port 1
-    this.deviceName = '/dev/tty' + sensorInfo.device.sensorNetwork.toUpperCase() + 
-      (Number(addrNport[0]) || 0);
+  if (!_.isUndefined(sensorInfo.device.address)) {
+    // address: serial device name ex) USB0
+    this.deviceName = '/dev/tty' + sensorInfo.device.address;
         
-    this.port = Number(addrNport[1]) || 0;
-    if (_.isUndefined(_portValue[this.deviceName])) { 
-      _portValue[this.deviceName] = 0; //init
+    this.channel = this.id && Number(_.last(this.id.split('-'))) || 0;
+    if (_.isUndefined(_channelValue[this.deviceName])) { 
+      _channelValue[this.deviceName] = 0; //init
     }
-    logger.info('nmPowerSwitchActuator sensor(deviceName: %s, port: %d) is created at driver', this.deviceName, this.port, sensorInfo);
+    logger.info('nmPowerSwitchActuator sensor(deviceName: %s, channel: %d) is created at driver', this.deviceName, this.channel, sensorInfo);
   } else {
-    logger.warn('nmPowerSwitchActuator sensor address or network is not provided', sensorInfo);
+    logger.warn('nmPowerSwitchActuator sensor address or channel is not provided', sensorInfo);
   }
 };
 
 nmPowerSwitchActuator.properties = {
-  supportedNetworks: ['usb'],
+  supportedNetworks: ['serial'],
   dataTypes: ['powerSwitch'],
   discoverable: false,
   addressable: true,
   maxInstances: 5,
-  idTemplate: '{model}-{macAddress}-{address}',
+  idTemplate: '{gatewayId}-{deviceAddress}-{sequence}',
   model: 'powerSwitch',
   commands: ['on', 'off', 'blink'],
   category: 'actuator'
@@ -46,17 +43,17 @@ util.inherits(nmPowerSwitchActuator, Actuator);
 
 nmPowerSwitchActuator.prototype.isOn = function() {
   /*jshint bitwise: false*/
-  return (_portValue[this.deviceName] & (1 << this.port)) !== 0;
+  return (_channelValue[this.deviceName] & (1 << this.channel)) !== 0;
 };
 
 nmPowerSwitchActuator.prototype.writeCmd = function(cmd) {
   /*jshint bitwise: false*/
-  var val = _portValue[this.deviceName];
+  var val = _channelValue[this.deviceName];
   
   if (cmd === 'on') {
-    val =  val | (1 << this.port);
+    val =  val | (1 << this.channel);
   } else { //off
-    val = val & ~(1 << this.port);
+    val = val & ~(1 << this.channel);
   }
 
   try {
@@ -65,7 +62,7 @@ nmPowerSwitchActuator.prototype.writeCmd = function(cmd) {
     logger.error('[nmPowerSwitch] writeCmd error', this.id, e);
     throw e;
   }
-  _portValue[this.deviceName] = val;
+  _channelValue[this.deviceName] = val;
 };
 
 /* Turn powerSwitch on */
