@@ -91,6 +91,7 @@ if (ACTUATOR_DRIVER_NAME) {
 }
 
 module.exports = {
+  networks: NETWORK_DRIVER_NAME ? [NETWORK_DRIVER_NAME] : [],
   drivers: drivers,
   initNetworks: initNetworks,
   initDrivers: initDrivers
