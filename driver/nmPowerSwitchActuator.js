@@ -57,7 +57,7 @@ nmPowerSwitchActuator.prototype.writeCmd = function(cmd) {
   }
 
   try {
-    fs.writeSync(fs.openSync(this.deviceName, 'w+'), val.toString());
+    fs.appendFileSync(this.deviceName, val.toString());
   } catch (e) {
     logger.error('[nmPowerSwitch] writeCmd error', this.id, e);
     throw e;
